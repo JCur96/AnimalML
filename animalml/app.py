@@ -2,6 +2,7 @@ from flask import Flask, render_template
 
 app = Flask(__name__)
 
+## basic navigation ##
 @app.route("/")
 def main():
     return render_template("index.html")
@@ -14,6 +15,7 @@ def CNNs():
 def Diffusers():
     return render_template("diffusers.html")
 
+## CNNs ##
 @app.route("/inference_cnns")
 def inference_cnns():
     return render_template("inference_CNNs.html")
@@ -22,6 +24,7 @@ def inference_cnns():
 def training_cnns():
     return render_template("training_CNNs.html")
 
+## Diffusers ##
 @app.route("/inference_diffusers")
 def inference_diffusers():
     return render_template("inference_diffusers.html")
@@ -30,10 +33,17 @@ def inference_diffusers():
 def training_diffusers():
     return render_template("training_diffusers.html")
 
+
+## Dataset functionality ##
 @app.route("/datasets")
 def datasets():
     return render_template("datasets.html")
 
+@app.route("/select_dataset")
+def select_dataset():
+    # probably want to import the datasets.py module
+    # then use the logic in there? 
+    return None
 
 if __name__ == "__main__":
     app.run()

@@ -175,3 +175,6 @@ cython_debug/
 
 # init file
 __init__.py
+
+# database items, which aren't really mine to share
+/data/database.json
