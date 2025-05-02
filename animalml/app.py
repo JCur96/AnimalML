@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
+import animalml.documents.datasets
 
 app = Flask(__name__)
 
@@ -44,6 +45,23 @@ def select_dataset():
     # probably want to import the datasets.py module
     # then use the logic in there? 
     return None
+@app.route("/build_database")
+def build_lila_database():
+    try:
+        destination_dir = "data/"
+        all_article_list = animalml.documents.datasets.build_dataset_database()
+        animalml.documents.datasets.save_to_json(destination_dir,all_article_list)
+        return jsonify({"message": "Database build started successfully."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+@app.route("/build_lila_metadata")
+def build_lila_metadata_db():
+    try:
+        animalml.documents.datasets.build_lila_metadata('data/lila/')
+        return jsonify({"message": "Lila metadata build started successfully."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run()

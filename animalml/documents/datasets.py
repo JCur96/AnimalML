@@ -3,6 +3,9 @@ from bs4 import BeautifulSoup
 import json
 import os
 
+# import download_lila_direct
+from megadetector.data_management.lila.lila_common import read_lila_all_images_file
+
 
 def get_lila_dataset_info():
     r = requests.get("https://lila.science/datasets")
@@ -63,7 +66,32 @@ def get_cloud_download_links(link):
     return new_text_links
 
 
+def build_lila_metadata(destination_folder):
+    lila_local_base = os.path.join(destination_folder)
+    os.makedirs(lila_local_base,exist_ok=True)
+    
+    metadata_dir = os.path.join(lila_local_base,'metadata')
+    os.makedirs(metadata_dir,exist_ok=True)
 
+    # download, unzip and read the lila metadata file for all dirs
+    # should check if it exists before jumping into the download
+    # in theory this function already does check for us
+    df = read_lila_all_images_file(metadata_dir)
+
+    # split into individual datasets
+    grouped = df.groupby('dataset_name')
+    dfs = {name: group for name, group in grouped}
+
+    # split into individual datasets in list form and keep track of names
+    df_list = [(name, group) for name, group in dfs.items()]
+
+    # write out each data frame in df_list to csv files in the metadata directory
+    for name, df_group in df_list:
+        # check that this hasn't already happened
+        if os.path.exists(f'{metadata_dir}/{name}.csv'):
+            continue
+        else:
+            df_group.to_csv(f'{metadata_dir}/{name}.csv')
 
 
 def build_dataset_database():
@@ -87,34 +115,45 @@ def build_dataset_database():
                          }
         all_article_list.append(article_dict)
         # I might want to edit this to be a json actually, where we use the name as the primary key?
-
     return all_article_list
 
 def download_lila_data(): # probably wants a dataset as input?
+    # will need to take which dataset I think
+    # Poss make a function for each different download type
+     
+    download_via_azure()##
     return None
     # print(article_info_list)
 
-def save_to_json(data, filename='database.json'):
-    file_path = os.path.join('../data', filename)
+def download_via_gs():
+    return
+def download_via_aws():
+    return
+def download_via_azure():
+    return
+
+def save_to_json(data, destination_dir, filename='database.json'):
+    file_path = os.path.join(destination_dir, filename)
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     with open(file_path, 'w') as json_file:
         json.dump(data, json_file, indent=4)
     
-def load_from_json(filename='database.json'):
-    file_path = os.path.join('../data', filename)
+def load_from_json(destination_dir, filename='database.json'):
+    file_path = os.path.join(destination_dir, filename)
     if os.path.exists(file_path):
         with open(file_path, 'r') as json_file:
             return json.load(json_file)
 
 
-def main():
-    # get_cloud_download_links('https://lila.science/datasets/nacti')
-    all_article_list = build_dataset_database()
-    # save it as a json for now / in the future?
-    save_to_json(all_article_list)
+# def main():
+#     # get_cloud_download_links('https://lila.science/datasets/nacti')
+#     all_article_list = build_dataset_database()
+#     # save it as a json for now / in the future?
+#     save_to_json(all_article_list)
+#     build_lila_metadata('../data/lila/')
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
     # links 
     # html_list = soup.find_all('a')
     # link_list = []

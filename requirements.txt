@@ -8,6 +8,4 @@ pillow
 matplotlib
 requests
 bs4
-json
-
-
+# megadetector
